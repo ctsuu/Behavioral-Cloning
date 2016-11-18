@@ -1,2 +1,2 @@
-# Advanced-Lane-Finding
-Udacity Self-Driving Car Engineer Class Project, due on Feb 6th, 2017
+# Behavioral-Cloning
+Udacity Self-Driving Car Engineer Class Project, due on Jan 23rd, 2017
