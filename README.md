@@ -41,13 +41,32 @@ This repository comes with trained model which you can directly test using the f
 
 ## Implementation
 
-### Data Capturing
+### Data Analysis
 
-During the training, the simulator captures data with a frequency of 10hz. Also, at a given time step it recorded three images taken from left, center, and right cameras. The following figure shows an example I have collected during the training time.
-
+First of all, we may want to see what is captured in the data set. For every given time stamp, there are 3 images recorded from left, center, and right cameras. 
 <p align="center">
  <img src="./image/3_images.png" width="800">
 </p>
+One steering angle value, throttle, brake, speed also recorded in the driving_log.csv file. 
+First plot is my keyboard driving inputs.
+<p align="center">
+ <img src="./image/keyboard_driving_dataset_steering_ 200_1600.png" width="800">
+</p>
+Second plot is Udacity provided driving inputs.
+<p align="center">
+ <img src="./image/udacity_raw_training_steering_200_1600.png" width="800">
+</p>
+Next plot is Udacity Open Source Car Challenge Two real human driving inputs.
+<p align="center">
+ <img src="./image/udacity_ch2_final_evalution_steering_200_1600_30f_moving_avg.png" width="800">
+</p>
+Next plot is Nvidia paper real human driving inputs.
+<p align="center">
+ <img src="./image/nvidia_training_steering_200_1600_30f_moving_avg.png" width="800">
+</p>
+
+
+
 
 Collected data are processed before feeding into the deep neural network and those preprocessing steps are described in the latter part of this file. 
 
