@@ -1,14 +1,20 @@
-# Self-Driving Car Engineer Nanodegree
-# Deep Learning
-## Behavioral Cloning: Navigating a Car in a Simulator
+# Behavioral Cloning: 
+##The taste of self-driving Car in a Simulator
 
 ### Overview
 
-The objective of this project is to clone human driving behavior using a Deep Neural Network. In order to achieve this, we are going to use a simple Car Simulator. During the training phase, we navigate our car inside the simulator using the keyboard. While we navigating the car the simulator records training images and respective steering angles. Then we use those recorded data to train our neural network. Trained model was tested on two tracks, namely training track and validation track. Following two animations show the performance of our final model in both training and validation tracks.
+The objective: Use Deep Learning to Clone Driving Behavior
 
-Training | Validation
-------------|---------------
-![training_img](./images/track_one.gif) | ![validation_img](./images/track_two.gif)
+I personly tried drive the car in provided simulator with keyboard. It took me a while to get used to the track 1, and saved  some images for exporation. Udacity also provided prefessional driver records for better results. I have broken down the project scope into the following sections:
+
+- Explorting the data
+- Training methold
+- Deep learning Model
+- Driving fine tune
+- Lessions Learned
+- Future Work
+
+First, let's talk about the computer setup. I have run the training cycle and driving cycle on CPU. It is quite hard on the machine. I have Dell T3500 workstation with 12G ram and 8 core CPU run on Linux Ubuntu 14.04. 
 
 ### Dependencies
 
