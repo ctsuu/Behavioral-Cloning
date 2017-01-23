@@ -227,7 +227,21 @@ if abs(float(current_steering_angle)*float(speed)) ==0:
 ```
 ## Lessons Learned/Reflection
 
-While the car keep running in the simulator, I can prepare the document for the submission. This is the self driving car future we are looking for. There are some 
+While the car keep running in the simulator, I can prepare the document for the submission. This is the self driving car future we are looking for. There are some obstacle to overcome: 
+- Better training data
+- More compute power
+- Standardize Network Architecture
+- It is a try and error approach, not engineering approach
+- Working on real environment
+
+###
+The Udacity provided training data is not too bad. In the begining, I don't like this kind of sharp on and off controller. 
+After tried different network architecture, Nvidia, Comma AI and my home made one, I like the Nvidia one. I hope they can standardize it, and provide with trained weights as well. 
+
+190 seconds to train 19200 66x200 size images on CPU, is not that bad. Somehow I found the GPU is not accelete that much in the generator setting. Both my GTX 1070 or K2000 GPU Utilization is very low, less than 40%. On other tensorflow test, the GPU get at lease 3-10 times faster than CPU. I guess the bottle neck maybe is the generator. During training or driving, the RAM memory useage is less than 2.8G, It doesn't make sense to save memory but spend more time waiting for results. 
+
+
+
 
 ## Conclusions and Future Directions
 In this project, we were working on a regression problem in the context of self-driving cars. In the initial phase, we mainly focused on finding a suitable network architecture and trained a model using our own dataset. According to Mean Square Error (**MSE**) our model worked well. However, it didn't perform as expected when we test the model using the simulator. So it was a clear indication that MSE is not a good metrics to assess the performance this project. 
