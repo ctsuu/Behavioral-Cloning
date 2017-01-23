@@ -79,8 +79,28 @@ There are total 24108 images (8036 images per camera), along with 8036 steering 
 
 ### Data Processing Pipeline
 
-I use Pandas module to read driving_log.csv, and saved all image file names and steering inputs into lists. I applied 5 frame moving average to the steering angle, and centered the result.    and  
-The following figure shows our data preprocessing pipeline.
+I use Pandas module to read driving_log.csv, and saved all image file names and steering inputs into lists. I applied 5 frame moving average to the steering angle, and centered the result. The left image assigned the steering angle with right turn offset, the right image assigned with left turn offset. 
+![udacity_raw_training_steering_200_2000_5f](https://cloud.githubusercontent.com/assets/22917810/22216774/a084e848-e15d-11e6-8c46-b53881ca2a17.png)
+
+### Image Processing Pipeline
+A combination of augmentation tools collected from https://github.com/upul, https://medium.com/@mohankarthik/cloning-a-car-to-mimic-human-driving-5c2f7e8d8aff#.kot5rcn4b, https://chatbotslife.com/learning-human-driving-behavior-using-nvidias-neural-network-model-and-image-augmentation-80399360efee#.gix474ksk, Udacity class room and slack channels. 
+```
+def pipeline(image, steering_angle, top_crop_percent=0.35, bottom_crop_percent=0.1,
+                       resize_dim=(64, 64), do_shear_prob=0.9):
+    head = bernoulli.rvs(do_shear_prob)
+    if head == 1:
+        image, steering_angle = random_shear(image, steering_angle)
+    image = lookahead_crop(image, top_crop_percent, bottom_crop_percent)
+    image = dark_image(image)
+    image = mask_image(image)
+    image, steering_angle = random_flip(image, steering_angle)
+    image = resize(image, resize_dim)
+    return image, steering_angle
+```
+The lookahead_crop is my idea inspired by human driver. When kids start learning how to ride bicycle, one important technique is when you zigzag the handle bar too much, lookup, lookahead, you will find much easier to balance and smooth out. Same thing as driving a car or race car, if you find hard to follow the track, or the lane, look farther, look into the apex, or the vanish point, you will find everything will smooth out. I applied this idea into the code, During training cycle, top_crop_percent is 35%, bottom_crop_percent is 10%. In the driving cycle, the image crop is moving up a few percent, to 30% and 12%. I can fine tune it without retrain the model again. 
+
+
+
 
 <p align="center">
  <img src="./images/pipeline.png" width="550">
