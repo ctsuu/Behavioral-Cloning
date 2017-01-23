@@ -98,12 +98,8 @@ def pipeline(image, steering_angle, top_crop_percent=0.35, bottom_crop_percent=0
     return image, steering_angle
 ```
 The lookahead_crop is my idea inspired by human driver. When kids start learning how to ride bicycle, one important technique is when you zigzag the handle bar too much, lookup, lookahead, you will find much easier to balance and smooth out. Same thing as driving a car or race car, if you find hard to follow the track, or the lane, look farther, look into the apex, or the vanish point, you will find everything will smooth out. I applied this idea into the code, During training cycle, top_crop_percent is 35%, bottom_crop_percent is 10%. In the driving cycle, the image crop is moving up a few percent, to 30% and 12%. I can fine tune it without retrain the model again. 
-
-
-
-
 <p align="center">
- <img src="./images/pipeline.png" width="550">
+ <img src="./image/image_pipeline_output.png" width="800">
 </p>
 
 In the very first state of the pipeline, we apply random shear operation. However, we select images with 0.9 probability for the random shearing process. We kept 10 percent of original images and steering angles in order to help the car to navigate in the training track. The following figure shows the result of shearing operation applied to a sample image.
