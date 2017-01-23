@@ -102,46 +102,110 @@ The lookahead_crop is my idea inspired by human driver. When kids start learning
  <img src="./image/image_pipeline_output.png" width="800">
 </p>
 
-In the very first state of the pipeline, we apply random shear operation. However, we select images with 0.9 probability for the random shearing process. We kept 10 percent of original images and steering angles in order to help the car to navigate in the training track. The following figure shows the result of shearing operation applied to a sample image.
+I see lot of students using random shear operation, so I think I will give it a try. I selected 90% of the images will go through the random shearing process. 
 
 <p align="center">
  <img src="./images/sheared.png">
 </p>
+Random darkness function is to adjust the brightness of a image, to make new image look like under a shade. 
+Random mask_img function will mask random area of a picture, the new image will look like under a shade and other difficulty visual conditions. The idea is inspired by Udacity project 1. 
+```
+def mask_image(img):
+    """
+    Applies an image mask.
+    region_of_interest(img, vertices):
+    """
+    rows,cols,ch = img.shape
+    ax = int(cols*(np.random.uniform(-0.5,0.5)))
+    bx = int(ax+cols*np.random.uniform(-0.5,0.5))
+    cx = int(np.random.uniform(0, 80))
+    dx = int(cols-cx)
+    p = (np.random.uniform(-0.5,0.5))
+    vertices = np.array([[(dx,rows),(ax,int(p*rows)), (bx, int(p*rows)), (cx,rows)]], dtype=np.int32)
+    shadow = np.random.randint(1, 200)
+    mask = np.full_like(img, shadow)
+        
+    #defining a 3 channel or 1 channel color to fill the mask with depending on the input image
+    if len(img.shape) > 2:
+        channel_count = img.shape[2]  # i.e. 3 or 4 depending on your image
+        ignore_mask_color = (255,) * channel_count
+    else:
+        ignore_mask_color = 255
+        
+    #filling pixels inside the polygon defined by "vertices" with the fill color    
+    cv2.fillPoly(mask, vertices, ignore_mask_color)
+    
+    #returning the image only where mask pixels are nonzero
+    masked_image = cv2.bitwise_and(img, mask)
+    
+    return masked_image
+```
+The flip function is simple flip the image and steering angle at 50/50 chance. I will consider flip all the images just to double the dataset size. 
 
-The images captured by the simulator come with a lot of details which do not directly help model building process.  In addition to that extra space occupied by these details required additional processing power. Hence, we remove 35 percent of the original image from the top and 10 percent. This process was done in crop stage. The following figure shows the result of cropping operation applied to an image.
-
-<p align="center">
- <img src="./images/cropped.png">
-</p>
-
-The next stage of the data processing pipeline is called random flip stage. In this stage we randomly (with 0.5 probability) flip images. The idea behind this operation is left turning bends are more prevalent than right bends in the training track. Hence, in order to increase the generalization of our mode, we flip images and respective steering angles. The following figure shows the result of flipping operation applied to an image.
-
-<p align="center">
- <img src="./images/flipped.png">
-</p>
-
-In the final state of the pipeline, we resize images to 64x64 in order to reduce training time. A sample resized image is shown in the following figure. Resized images are fed into the neural network. The following figure shows the result of resize operation applied to an image.
-
-<p align="center">
- <img src="./images/resized.png">
-</p>
-
-Next we are going to discuss our neural network architecture.
+According to the model input size(64x64), all images need resize to fit. 
+There are more benfit to make a square input, it will explained in the notebook and driving section.
 
 ### Network Architecture 
 
-Our convolutional neural network architecture was inspired by NVIDIA's End to End Learning for Self-Driving Cars paper. The main difference between our model and the NVIDIA mode is than we did use MaxPooling layers just after each  Convolutional Layer in order to cut down training time. For more details about our network architecture please refer following figure.
+NVIDIA's End to End Learning for Self-Driving Cars Network Architecture is a well know model that work for this kind of project. paper. In this project, I kept all the feature filters for each layer, and use the same stride and padding sittings as Nvidia paper. And transfer it into Keras environment. My approach is try to keep track of what kind of structures are going to work, which one are not going to work.  
 
-<p align="center">
- <img src="./images/conv_architecture.png" height="600">
-</p>
+Eventually, I added Lambda layer to normalize the input image, follow by a color space conversion layer.
+I don't see a big differecy or benefit about this color space layer yet. 
+I do added a MaxPooling layer after first Convolutional layer to see if there is any benefit.  
+The full network is look like this: 
+```
+model = Sequential()
+# First Normalize layer, credit to comma ai model
+model.add(Lambda(lambda x: x / 127.5 - 1.0, input_shape=(66, 200, 3)))
+# Color space conversion layer, credit to Vivek's model
+model.add(Convolution2D(3, 1, 1, border_mode='same', name='color_conv'))
+# Classic five convolutional, Nvidia model and additional maxpooling layers
+model.add(Convolution2D(24, 5, 5, border_mode='valid', activation='relu', subsample=(2, 2)))
+model.add(Convolution2D(36, 5, 5, border_mode='valid', activation='relu', subsample=(2, 2)))
+model.add(Convolution2D(48, 5, 5, border_mode='valid', activation='relu', subsample=(2, 2)))
+model.add(Convolution2D(64, 3, 3, border_mode='valid', activation='relu', subsample=(1, 1)))
+model.add(Convolution2D(64, 3, 3, border_mode='valid', activation='relu', subsample=(1, 1)))
+model.add(Flatten())
+# Next, five fully connected layers
+model.add(Dense(1164, activation='relu'))
+model.add(Dropout(keep_prob))
+model.add(Dense(100, activation='relu'))
+model.add(Dense(50, activation='relu'))
+model.add(Dense(10, activation='relu'))
+model.add(Dense(1))
 
-### Training
-Even after cropping and resizing training images (with all augmented images), training dataset was very large and it could not fit into the main memory. Hence, we used `fit_generator` API of the Keras library for training our model.
+model.summary()
 
-We created two generators namely:
-* `train_gen = helper.generate_next_batch()`
-* `validation_gen = helper.generate_next_batch()` 
+model.compile(optimizer=Adam(learning_rate), loss="mse" )
+```
+There are 1,595,523 total/trainable parameters came out of this model. Nvidia paper stated only 250k parameters. 
+
+Resize the input image to 64x64 can save one third of the CPU training time, from 190s to 120s. 
+
+### Training Method
+As requested, fit_generator function is used to generate images while training the model. 
+I implementated two generators, one for training batch, one for validation batch:
+```
+def generate_train_batch(batch_size=64):
+    # Generate train batch data on the fly, yield array file format.
+    while True:
+        X_batch = []
+        y_batch = []
+        #images = get_train_image_files(batch_size)
+        files = get_train_batch_data(batch_size)
+        raw_angle = files[1]
+        i = 0       
+        for img_file in files[0]:
+            #Read all images and angles in the batch and go through image process pipeline
+            raw_image = scipy.misc.imread(img_path + img_file)
+            new_image, new_angle = pipeline(raw_image, amp_factor*raw_angle[i])
+            X_batch.append(new_image)
+            y_batch.append(new_angle)
+            i += 1
+
+        yield np.array(X_batch), np.array(y_batch)
+```
+
 
 Batch size of both `train_gen` and `validation_gen` was 64. We used 20032 images per training epoch. It is to be noted that these images are generated on the fly using the document processing pipeline described above. In addition to that, we used 6400 images (also generated on the fly) for validation. We used `Adam` optimizer with `1e-4` learning rate. Finally, when it comes to the number of training epochs we tried several possibilities such as `5`, `8`, `1`0, `2`5 and `50`. However, `8` works well on both training and validation tracks. 
 
