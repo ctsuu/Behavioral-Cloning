@@ -45,9 +45,9 @@ This repository comes with trained model which you can directly test using the f
 
 During the training, the simulator captures data with a frequency of 10hz. Also, at a given time step it recorded three images taken from left, center, and right cameras. The following figure shows an example I have collected during the training time.
 
-Left| Center | Right
-----|--------|-------
-![left](./images/left.png) | ![center](./images/center.png) | ![right](./images/right.png)
+<p align="center">
+ <img src="./image/3_images.png" width="800">
+</p>
 
 Collected data are processed before feeding into the deep neural network and those preprocessing steps are described in the latter part of this file. 
 
