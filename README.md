@@ -65,14 +65,21 @@ Next plot is Nvidia paper real human driving inputs.
  <img src="./image/nvidia_training_steering_200_1600_30f_moving_avg.png" width="800">
 </p>
 
-The first thing I want to do is to apply a moving average to the input and smooth out the steering action. Because I never turn the steering wheel like keyboard driver does. But something happed after. 
+The first thing I want to do is to apply a moving average to the input and smooth out the steering action. The green line shows 30 frams averaged outputs. Because I never turn the steering wheel like keyboard driver does. But something happed after. 
 
 ### Training methold
 
 There are total 24108 images (8036 images per camera), along with 8036 steering records in the Udacity dataset. Compare to Nvidia sample set 40,000 images one channel, this is very small, may not have enough image to generalize the model weight in order to pass the training course or other unseen courses. Image Augmentation Technique is recommand by Udacity and other student's post. I tried many of them, and I choose the following to form the image processing pipeline. 
-
+- Random adjust the image brighnest/darkness
+- Flip the image and steering angle together
+- Random mask some area of the image, create shadow effect
+- Random shear
+- Lookahead, crop the image center portation out
+- Horizontal crop the image center portation out, with shifted steering angle
 
 ### Data Processing Pipeline
+
+I use Pandas module to read driving_log.csv, and saved all image file names and steering inputs into lists. I applied 5 frame moving average to the steering angle, and centered the result.    and  
 The following figure shows our data preprocessing pipeline.
 
 <p align="center">
