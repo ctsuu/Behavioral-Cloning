@@ -41,7 +41,7 @@ This repository comes with trained model which you can directly test using the f
 
 ## Implementation
 
-### Data Analysis
+### Explorting the data
 
 First of all, we may want to see what is captured in the data set. For every given time stamp, there are 3 images recorded from left, center, and right cameras. 
 <p align="center">
@@ -65,15 +65,12 @@ Next plot is Nvidia paper real human driving inputs.
  <img src="./image/nvidia_training_steering_200_1600_30f_moving_avg.png" width="800">
 </p>
 
+The first thing I want to do is to apply a moving average to the input and smooth out the steering action. Because I never turn the steering wheel like keyboard driver does. But something happed after. 
 
+### Training methold
 
+There are total 24108 images (8036 images per camera), along with 8036 steering records in the Udacity dataset. Compare to Nvidia sample set 40,000 images one channel, this is very small, may not have enough image to generalize the model weight in order to pass the training course or other unseen courses. Image Augmentation Technique is recommand by Udacity and other student's post. I tried many of them, and I choose the following to form the image processing pipeline. 
 
-Collected data are processed before feeding into the deep neural network and those preprocessing steps are described in the latter part of this file. 
-
-### Dataset Statistics
-The dataset consists of 24108 images (8036 images per camera angle). The training track contains a lot of shallow turns and straight road segments. Hence, the majority of the recorded steering angles are zeros. Therefore, preprocessing images and respective steering angles are necessary in order to generalize the training model for unseen tracks such as our validation track.
-
-Next, we are going explain our data processing pipeline.
 
 ### Data Processing Pipeline
 The following figure shows our data preprocessing pipeline.
