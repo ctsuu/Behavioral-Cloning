@@ -54,7 +54,7 @@ First plot is my keyboard driving inputs.
 </p>
 Second plot is Udacity provided driving inputs.
 <p align="center">
- <img src="./image/udacity_raw_training_steering_200_1600.png" width="800">
+ <img src="./image/udacity_raw_training_steering_200_1600" width="800">
 </p>
 Next plot is Udacity Open Source Car Challenge Two real human driving inputs.
 <p align="center">
