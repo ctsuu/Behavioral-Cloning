@@ -5,12 +5,12 @@
 
 The objective: Use Deep Learning to Clone Driving Behavior
 
-I personly tried drive the car in provided simulator with keyboard. It took me a while to get used to the track 1, and saved  some images for exporation. Udacity also provided prefessional driver records for better results. I have broken down the project scope into the following sections:
+I personly tried drive the car in provided simulator with keyboard. It took me a while to get used to the track 1, and saved  some images for exporation. Udacity also provided prefessional driver records for better results. I have broken down the project scope into the following modules:
 
-- Explorting the data
-- Training methold
-- Deep learning Model
-- Driving fine tune
+- Explorting the data (data_visualization.ipynb)
+- Image processing pipeline (utility.py)
+- Deep learning Model (model.py)
+- Driving fine tune (drive.py)
 - Lessions Learned
 - Future Work
 
@@ -260,17 +260,4 @@ There are many online resources available and helpful for this project. Thank yo
 -  https://github.com/mvpcom/Udacity-CarND-Project-3
 -  https://github.com/karolmajek/BehavioralCloning-CarSteering
 -  https://github.com/commaai/research/blob/master/train_steering_model.py
-
-
-
-
-In this project, we were working on a regression problem in the context of self-driving cars. In the initial phase, we mainly focused on finding a suitable network architecture and trained a model using our own dataset. According to Mean Square Error (**MSE**) our model worked well. However, it didn't perform as expected when we test the model using the simulator. So it was a clear indication that MSE is not a good metrics to assess the performance this project. 
-
-In the next phase of the project, we started to use a new dataset (actually, it was the dataset published by Udacity). Additionally, we didn't fully rely on MSE when building our final model. Also, we use relatively small number of training epochs (namely `8` epochs). Data augmentation and new dataset work surprisingly well and our final model showed superb performance on both tracks. 
-
-When it comes to extensions and future directions, I would like to highlight followings.
-
-* Train a model in real road conditions. For this, we might need to find a new simulator.
-* Experiment with other possible data augmentation techniques.
-* When we are driving a car, our actions such as changing steering angles and applying brakes are not just based on instantaneous driving decisions. In fact, curent driving decision is based on what was traffic/road condition in fast few seconds. Hence, it would be really interesting to seee how Recurrent Neural Network (**RNN**) model such as **LSTM** and **GRU** perform this problem.
-* Finally, training a (deep) reinforcement agent would also be an interesting additional project.
+-  and many many comments in slack channels. 
