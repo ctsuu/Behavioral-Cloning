@@ -227,23 +227,43 @@ if abs(float(current_steering_angle)*float(speed)) ==0:
 ```
 ## Lessons Learned/Reflection
 
-While the car keep running in the simulator, I can prepare the document for the submission. This is the self driving car future we are looking for. There are some obstacle to overcome: 
+While the car keep running in the simulator, I can prepare the document for the submission. This is the self driving car future we are looking for. We need overcome some obstacles: 
 - Better training data
 - More compute power
 - Standardize Network Architecture
 - It is a try and error approach, not engineering approach
 - Working on real environment
 
-###
+## Future Work
 The Udacity provided training data is not too bad. In the begining, I don't like this kind of sharp on and off controller. 
 After tried different network architecture, Nvidia, Comma AI and my home made one, I like the Nvidia one. I hope they can standardize it, and provide with trained weights as well. 
 
 190 seconds to train 19200 66x200 size images on CPU, is not that bad. Somehow I found the GPU is not accelete that much in the generator setting. Both my GTX 1070 or K2000 GPU Utilization is very low, less than 40%. On other tensorflow test, the GPU get at lease 3-10 times faster than CPU. I guess the bottle neck maybe is the generator. During training or driving, the RAM memory useage is less than 2.8G, It doesn't make sense to save memory but spend more time waiting for results. 
 
+I thought a smoothout steering curve is better for the training, but it turn out not really the case. Over smoothed curve yield very aggressive turnning. Or maybe it is a very good result, or we just need fine tune the controller to handle it properly. 
+
+Also, in the real world, most of the time, the steering wheel is in netural position. Train the machine not to over react is harder than keep moving. 
+
+I find the simulator also provide real time steering_angle, throttle, speed and image feed. Therefore, it is possible to record new training set, with machine driving behavioral. Most of time, it drives better than me. I am going to explore more about the reinforcement learning. After few generation, no one can bit machine performance. 
+
+## Acknowledgements
+
+There are many online resources available and helpful for this project. Thank you everyone to share them to the world. 
+-  https://medium.com/@mohankarthik/cloning-a-car-to-mimic-human-driving-5c2f7e8d8aff#.kot5rcn4b
+-  https://chatbotslife.com/learning-human-driving-behavior-using-nvidias-neural-network-model-and-image-augmentation-80399360efee#.ykemywxos
+-  https://github.com/upul/behavioral_cloning
+-  https://review.udacity.com/
+-  http://stackoverflow.com/questions/1756096/understanding-generators-in-python
+-  http://www.pyimagesearch.com/2015/10/05/opencv-gamma-correction/
+-  The model is based on NVIDIA's "End to End Learning for Self-Driving Cars" paper
+-  Source:  https://arxiv.org/pdf/1604.07316.pdf
+-  https://github.com/mvpcom/Udacity-CarND-Project-3
+-  https://github.com/karolmajek/BehavioralCloning-CarSteering
+-  https://github.com/commaai/research/blob/master/train_steering_model.py
 
 
 
-## Conclusions and Future Directions
+
 In this project, we were working on a regression problem in the context of self-driving cars. In the initial phase, we mainly focused on finding a suitable network architecture and trained a model using our own dataset. According to Mean Square Error (**MSE**) our model worked well. However, it didn't perform as expected when we test the model using the simulator. So it was a clear indication that MSE is not a good metrics to assess the performance this project. 
 
 In the next phase of the project, we started to use a new dataset (actually, it was the dataset published by Udacity). Additionally, we didn't fully rely on MSE when building our final model. Also, we use relatively small number of training epochs (namely `8` epochs). Data augmentation and new dataset work surprisingly well and our final model showed superb performance on both tracks. 
