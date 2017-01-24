@@ -206,7 +206,7 @@ Due to the moving average calculation, the steering value at the begining and en
 
 ## Results
 
-In this project, 10 epochs seems enough to drop the loss to 0.003-ish range. it will be barelly go through the training track. There are more tune up can be done to make it drive smoothly and safely.     
+In this project, 20 epochs seems enough to drop the loss to 0.037-ish range. it will be barelly go through the training track. The training slows down at about 15 epoch. There are more tune up can be done to make it drive smoothly and safely.     
 
 ## Driving fine tune
 
