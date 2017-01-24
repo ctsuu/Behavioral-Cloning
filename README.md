@@ -202,13 +202,13 @@ def generate_train_batch(batch_size=64):
 
         yield np.array(X_batch), np.array(y_batch)
 ```
-Due to the moving average calculation, the steering value at the begining and end of the list is bad. So I clipped of the end, only take [200:8000] and merge into X_all for image file names, and y_all for steering values. The shuffle and split the dataset into train and validation subset. Function get_train_image_files() will loop through the train set, every image will be used. Same as the validation subset.   
+Due to the moving average calculation, the steering value at the begining and end of the list is bad. So I clipped of the end, only take [200:8000] and merge into X_all for image file names, and y_all for steering values. The shuffle and split the dataset into train and validation subset. Function get_train_image_files() will loop through the train set, every image will be used. 
 
 ## Results
 
 In this project, 10 epochs seems enough to drop the loss to 0.003-ish range. it will be barelly go through the training track. There are more tune up can be done to make it drive smoothly and safely.     
 
-### Driving fine tune
+## Driving fine tune
 
 Three frame moving average also applied to the predicted steering angle.  The weight factor 1.1 is to offset the average loss on the peak value, and and a small bias 0.05 is to offset the training defect, the car always turn to one side.  
 ```
@@ -218,13 +218,15 @@ Small amount 1% of lookahead(lookup) is applied to the driving image processing 
 ```
 image_array = utility.lookahead_crop(image_array, 0.34, 0.12)
 ```
-At high speed, the car sometime run into overshooting situation. The car make sharp turn, over corrected, make sharp turn to another direction. I think apply PID control can correct it. Also reduce the speed can help as well. I choose an easy solution: 
+At high speed, the car sometime run into overshooting situation. The car make sharp turn, over corrected, make sharp turn to another direction. I think apply PID control can correct it. Also reduce the speed can help as well. I choose an easy solution, if the car want to make sharp turn at high speed, reduce the throttle: 
 ```
 if abs(float(current_steering_angle)*float(speed)) ==0:
         throttle = 0.3
     else:
         throttle = 0.3*12/abs(float(current_steering_angle)*float(speed))
 ```
+As result, the car can reach top speed 30mph, it also can keep on the track. 
+
 ## Lessons Learned/Reflection
 
 While the car keep running in the simulator, I can prepare the document for the submission. This is the self driving car future we are looking for. We need overcome some obstacles: 
