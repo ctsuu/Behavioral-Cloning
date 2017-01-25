@@ -273,11 +273,13 @@ The validation generater yields straight images from reserved validation set, no
 
 The Adam learning rate is 0.001, I can see the training loss improving quickly on epoch 1 -2, than flat out. So I maybe can try add more dropout to check results, then add more maxpooling, then reduce the learning rate to provent local optimal.   
 
-## Results
+### Results
 
-In this project, 20 epochs seems enough to drop the loss to 0.037-ish range. it will be barelly go through the training track. The training slows down at about 15 epoch. There are more tune up can be done to make it drive smoothly and safely.     
+In this project, 20 epochs seems enough to drop the loss to 0.037-ish range. [it can handle the training track](https://www.youtube.com/watch?v=eFpnKPBd5ts&t=2s). The training slows down at about 15 epoch. There are more tune up can be done to make it drive smoothly and safely.     
 
-## Driving fine tune
+40 epochs is the kicker, if you want to [pass the mountain track 2](https://www.youtube.com/watch?v=mwniaaC-1fQ&t=16s). It is a totally unknown track for the computer. The machine only see batch of augmentated images, some are not even recognizable by human. 
+
+### Driving fine tune
 
 Three frame moving average also applied to the predicted steering angle.  The weight factor 1.1 is to offset the average loss on the peak value, and and a small bias 0.05 is to offset the training defect, the car always turn to one side.  
 ```
