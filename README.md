@@ -5,11 +5,13 @@
 
 The objective: Use Deep Learning to Clone Driving Behavior
 
-I personly tried drive the car in provided simulator with keyboard. It took me a while to get used to the track 1, and saved  some images for exporation. Udacity also provided prefessional driver records for better results. I have broken down the project scope into the following modules:
+I personly tried drive the car in provided simulator with keyboard. It took me a while to get used to the track 1, and saved  some images for exporation. Udacity also provided [prefessional driver records](https://www.youtube.com/watch?v=tMs6NUHAy80) for better results. I have broken down the project scope into the following modules:
 
 - Explorting the data (data_visualization.ipynb)
-- Image processing pipeline (utility.py)
-- Deep learning Model (model.py)
+- Data Processing Pipeline (utility.py)
+- Deep Learning Model Architecture Design (model.py)
+- Model Architecture Characteristics
+- Model Training (Include hyperparameter tuning) 
 - Driving fine tune (drive.py)
 - Lessions Learned
 - Future Work
@@ -36,7 +38,7 @@ Run this command at the terminal prompt to install [OpenCV](http://opencv.org/).
 ### How to Run the Model
 
 This repository comes with trained model which you can directly test using the following command.
-
+Make sure the drive_log.csv is attached in the ./data/ path.
 - `python drive.py model.json`
 
 ## Implementation
