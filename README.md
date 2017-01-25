@@ -12,7 +12,7 @@ I personly tried drive the car in provided simulator with keyboard. It took me a
 - Deep Learning Model Architecture Design (model.py)
 - Model Architecture Characteristics
 - Model Training (Include hyperparameter tuning) 
-- Driving fine tune (drive.py)
+- Results / Driving fine tune (drive.py)
 - Lessions Learned
 - Future Work
 
@@ -155,7 +155,7 @@ The input shape I kept as (66, 200, 3). It is smaller than Resnet, AlexNet and V
 
 Next is a color space conversion layer, credit to [Vivek's model](https://chatbotslife.com/learning-human-driving-behavior-using-nvidias-neural-network-model-and-image-augmentation-80399360efee#.ykemywxos). The idea is use 3 filter go through 3 color channels, see which one get picked. I don't see a big differecy or benefit about this color space layer yet. 
 
-There are 5 convolutional layers. each one has 24 to 64 filters, all use 'valid' padding, stribe  
+There are 5 convolutional layers. each one has 24 to 64 filters, all use 'valid' padding, strid of 2 or 1. All activation function use "relu". I have tried 'ELU' before, didn't see good results.    
 
 I do added a MaxPooling layer after first Convolutional layer to see if there is any benefit.  
 The full network is look like this: 
@@ -184,12 +184,68 @@ model.summary()
 
 model.compile(optimizer=Adam(learning_rate), loss="mse" )
 ```
+Layer (type)                     Output Shape          Param #     Connected to                     
+====================================================================================================
+lambda_1 (Lambda)                (None, 66, 200, 3)    0           lambda_input_1[0][0]             
+____________________________________________________________________________________________________
+color_conv (Convolution2D)       (None, 66, 200, 3)    12          lambda_1[0][0]                   
+____________________________________________________________________________________________________
+convolution2d_1 (Convolution2D)  (None, 31, 98, 24)    1824        color_conv[0][0]                 
+____________________________________________________________________________________________________
+maxpooling2d_1 (MaxPooling2D)    (None, 30, 97, 24)    0           convolution2d_1[0][0]            
+____________________________________________________________________________________________________
+convolution2d_2 (Convolution2D)  (None, 13, 47, 36)    21636       maxpooling2d_1[0][0]             
+____________________________________________________________________________________________________
+convolution2d_3 (Convolution2D)  (None, 5, 22, 48)     43248       convolution2d_2[0][0]            
+____________________________________________________________________________________________________
+convolution2d_4 (Convolution2D)  (None, 3, 20, 64)     27712       convolution2d_3[0][0]            
+____________________________________________________________________________________________________
+convolution2d_5 (Convolution2D)  (None, 1, 18, 64)     36928       convolution2d_4[0][0]            
+____________________________________________________________________________________________________
+flatten_1 (Flatten)              (None, 1152)          0           convolution2d_5[0][0]            
+____________________________________________________________________________________________________
+dense_1 (Dense)                  (None, 1164)          1342092     flatten_1[0][0]                  
+____________________________________________________________________________________________________
+dropout_1 (Dropout)              (None, 1164)          0           dense_1[0][0]                    
+____________________________________________________________________________________________________
+dense_2 (Dense)                  (None, 100)           116500      dropout_1[0][0]                  
+____________________________________________________________________________________________________
+dense_3 (Dense)                  (None, 50)            5050        dense_2[0][0]                    
+____________________________________________________________________________________________________
+dense_4 (Dense)                  (None, 10)            510         dense_3[0][0]                    
+____________________________________________________________________________________________________
+dense_5 (Dense)                  (None, 1)             11          dense_4[0][0]                    
+====================================================================================================
+Total params: 1,595,523
+Trainable params: 1,595,523
+Non-trainable params: 0
+
 There are 1,595,523 total/trainable parameters came out of this model. Nvidia paper stated only 250k parameters. 
 
-Resize the input image to 64x64 can save one third of the CPU training time, from 190s to 120s. 
+The 5 convolutional layer shrink down layer by layer as per the plan, because I am using the 'valid' padding, until it reach 64@1x18. Then I flatten the 64 layers down, get 64x1x18 = 1152 connectors. 
+
+Then follow by 5 fully connected layers. The first dense layer has 1164 connectors, therefore, between flatten layer and dense_1 layer has 1152x1164+1164 = 1342092 connections. Activation function is 'relu' again. 
+
+Some architecture through out, the output layer with one output, no activation funcion. 
+
+Dropout is aplied after dense_1 layer. Not changing in parameters, but will provent some overfitting. 
+
+I tried some smaller network, 64x64, 300k params, cut down training time by one third, result is ok, not that great. 
+So I didn't use them.  
+
+## Model Architecture Characteristics
+
+I think this is a mid-size network, enough parameters to save the weight and biases for the courses in simulator, and some real world challenges, such as the Udacity self driving car challenge two. I am going to apply this network on it later. 
+
+Keras version seems run faster than the direct tensorflow version on CPU. I run through 40 epochs on 19200 images, total 768k images for about 2 hours on CPU. Original Nvidia model run through 1300k images for 2 hours on GPU. 
+
+The network model use adam as optimizer, with learning rate 0.001. The loss function use "MSE". The starter loss is around 0.2 - 0.5. Then drop to 0.1-ish after 1 epoch. Then drop slowly. About 10 epoches, it reaches 0.04, 20 epoches, 0.03, 40 epoches, 0.028-ish. From 0.04 to 0.03, the model is able to run through track 1, 0.028, it can run through [track 2](https://www.youtube.com/watch?v=mwniaaC-1fQ) beatuifully, but getting worst on track 1, maybe that is overfitting issue.  
+I can add more maxpooling and dropout layers.
 
 ## Training Strategy
-As requested, fit_generator function is used to generate images while training the model. 
+
+As requested, fit_generator function is used to generate images while training the model. The model only allow to see track one many times, track 2 is never seem. Track 1 is sunny, bright, and flat course. The challenge could be the white out, small shadow on the road,and bridge. Track 2 is dark, shadow, steep hill, and curve, everything is unknown. The provided data set has 8000 images from each camera, all facing forward, left, center and right. I can use all, but still not enough. Additional augmentation is needed. We can use generator to produce augmentated images on the fly to training the model.   
+
 I implementated two generators, one for training batch, one for validation batch:
 ```
 def generate_train_batch(batch_size=64):
@@ -211,7 +267,11 @@ def generate_train_batch(batch_size=64):
 
         yield np.array(X_batch), np.array(y_batch)
 ```
-Due to the moving average calculation, the steering value at the begining and end of the list is bad. So I clipped of the end, only take [200:8000] and merge into X_all for image file names, and y_all for steering values. The shuffle and split the dataset into train and validation subset. Function get_train_image_files() will loop through the train set, every image will be used. 
+Due to the moving average calculation, the steering value at the begining and end of the list is bad. So I clipped of the end, only take [200:8000] and merge into X_all for image file names, and y_all for steering values. The shuffle and split the dataset into train and validation subset. Function get_train_image_files() will loop through the train set, every image will be used. Every trainning image go through the pipeline once, randomly sheared, darkning, flipped, shifted, then resize to fit (66, 200) window, with 64 images per batch. It is possible to generate more than once in the pipeline, to make 2x, 4x or more images per batch. I choose to keep it as one and increase the epoch number form 10 to 40. 
+
+The validation generater yields straight images from reserved validation set, no augmentation. Somehow the validation loss is quite high, around 0.1-0.14. But it don't affect the final test result. Maybe I can take more images into training set.  
+
+The Adam learning rate is 0.001, I can see the training loss improving quickly on epoch 1 -2, than flat out. So I maybe can try add more dropout to check results, then add more maxpooling, then reduce the learning rate to provent local optimal.   
 
 ## Results
 
