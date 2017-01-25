@@ -278,6 +278,9 @@ The Adam learning rate is 0.001, I can see the training loss improving quickly o
 In this project, 20 epochs seems enough to drop the loss to 0.037-ish range. [it can handle the training track](https://www.youtube.com/watch?v=eFpnKPBd5ts&t=2s). The training slows down at about 15 epoch. There are more tune up can be done to make it drive smoothly and safely.     
 
 40 epochs is the kicker, if you want to [pass the mountain track 2](https://www.youtube.com/watch?v=mwniaaC-1fQ&t=16s). It is a totally unknown track for the computer. The machine only see batch of augmentated images, some are not even recognizable by human. 
+<p align="center">
+ <img src="./image/5x5_pipeline_output.png" width="800">
+</p>
 
 ### Driving fine tune
 
