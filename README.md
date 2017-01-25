@@ -325,21 +325,17 @@ While the car keep running in the simulator, I can prepare the document for the 
 - It is a try and error approach, and engineering approach
 - Working on real environment
 
-## Future Work
-The Udacity provided training data is not too bad. It does have some bad turns. And the model clones them. It perfecty matches the title, behavioral clone. If you are good driver, it clones. If you are bad driver, it clones. 
+### Future Work
+The Udacity provided training data is not too bad. It does have some bad turns. And the model clones them. It is perfecty matched the title "behavioral clone". If you are good driver, it clones. If you are bad driver, it clones too. 
+I think somehow it is hard to figure out who is better driver, human or machine.  
 
-In the begining, I don't like this kind of sharp on and off controller. 
-After tried different network architecture, Nvidia, Comma AI and my home made one, I like the Nvidia one. I hope they can standardize it, and provide with trained weights as well. 
+In the begining, I don't like this kind of sharp on and off keyboard driving input. Later, I found out the udacity dataset is already smoothed, or at least is joystick or wheeled controller input. I thought a smooth steering curve is better for the training, but it turn out not really the case. Over smoothed curve yield very aggressive turnning. Maybe it is a very good result, we just need fine tune the controller to handle it properly. Also, in the real world, most of the time, the steering wheel is in netural position. Train the machine not to over react is harder than keep moving. 
 
-190 seconds to train 19200 66x200 size images on CPU, is not that bad. Somehow I found the GPU is not accelete that much in the generator setting. Both my GTX 1070 or K2000 GPU Utilization is very low, less than 40%. On other tensorflow test, the GPU get at lease 3-10 times faster than CPU. I guess the bottle neck maybe is the generator. During training or driving, the RAM memory useage is less than 2.8G, It doesn't make sense to save memory but spend more time waiting for results. 
+190 seconds to train 19200 66x200 size images on CPU, is not that bad. Somehow I find the GPU is not working as hard as I expected in the generator setting. Both my GTX 1070 or K2000 GPU Utilization is very low, less than 4-30%. On normal tensorflow test, the GPU get at lease 3-10 times faster than CPU. I guess the bottle neck maybe is the generator. During training or driving, the RAM memory useage is less than 2.8G, It doesn't make sense to save memory but spend more time waiting for results. After tried different network architecture, Nvidia, Comma AI and my home made one, I like the Nvidia one. I hope they can standardize it, and provide with trained weights as well. Transfer learning has huge benefit for machine learning.
 
-I thought a smoothout steering curve is better for the training, but it turn out not really the case. Over smoothed curve yield very aggressive turnning. Or maybe it is a very good result, or we just need fine tune the controller to handle it properly. 
+I find the simulator also provide real time steering_angle, throttle, speed and image feed. Therefore, it is possible to record new training set driving by the machine. Then train the machine again. After few generation, the machine driver will be better than human. I am going to explore more about the reinforcement learning. 
 
-Also, in the real world, most of the time, the steering wheel is in netural position. Train the machine not to over react is harder than keep moving. 
-
-I find the simulator also provide real time steering_angle, throttle, speed and image feed. Therefore, it is possible to record new training set, with machine driving behavioral. Most of time, it drives better than me. I am going to explore more about the reinforcement learning. After few generation, no one can bit machine performance. 
-
-## Acknowledgements
+### Acknowledgements
 
 There are many online resources available and helpful for this project. Thank you everyone to share them to the world. 
 -  https://medium.com/@mohankarthik/cloning-a-car-to-mimic-human-driving-5c2f7e8d8aff#.kot5rcn4b
