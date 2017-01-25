@@ -184,6 +184,7 @@ model.summary()
 
 model.compile(optimizer=Adam(learning_rate), loss="mse" )
 ```
+```
 Layer (type)                     Output Shape          Param #     Connected to                     
 ====================================================================================================
 lambda_1 (Lambda)                (None, 66, 200, 3)    0           lambda_input_1[0][0]             
@@ -219,7 +220,7 @@ dense_5 (Dense)                  (None, 1)             11          dense_4[0][0]
 Total params: 1,595,523
 Trainable params: 1,595,523
 Non-trainable params: 0
-
+```
 There are 1,595,523 total/trainable parameters came out of this model. Nvidia paper stated only 250k parameters. 
 
 The 5 convolutional layer shrink down layer by layer as per the plan, because I am using the 'valid' padding, until it reach 64@1x18. Then I flatten the 64 layers down, get 64x1x18 = 1152 connectors. 
@@ -277,14 +278,23 @@ The Adam learning rate is 0.001, I can see the training loss improving quickly o
 
 In this project, 20 epochs seems enough to drop the loss to 0.037-ish range. [it can handle the training track](https://www.youtube.com/watch?v=eFpnKPBd5ts&t=2s). The training slows down at about 15 epoch. There are more tune up can be done to make it drive smoothly and safely.     
 
-40 epochs is the kicker, if you want to [pass the mountain track 2](https://www.youtube.com/watch?v=mwniaaC-1fQ&t=16s). It is a totally unknown track for the computer. The machine only see batch of augmentated images, some are not even recognizable by human. 
+40 epochs is the kicker, if you want to [pass the mountain track 2](https://www.youtube.com/watch?v=mwniaaC-1fQ&t=16s). It is a totally unknown track for the computer. The machine only see batch of augmentated images, some are not even recognizable by human. And they are low resulation, the car's life depends on 66x200 pictures. 
 <p align="center">
  <img src="./image/5x5_pipeline_output.png" width="800">
 </p>
+Anyway, the car drives to the top, the road block. 
 
 ### Driving fine tune
 
-Three frame moving average also applied to the predicted steering angle.  The weight factor 1.1 is to offset the average loss on the peak value, and and a small bias 0.05 is to offset the training defect, the car always turn to one side.  
+As the model.py completed the training cycle, the frash model may or may not working on the track. I did few tune-ups as following: 
+- Moving average
+- Weight and bias for the steering output
+- Lookahead, look up
+- Smart throttle
+
+Three frame moving average also applied to the predicted steering angle. The moving window can be set between 3-10. The more window will delate the steering action. 
+
+The weight factor 1.1 is to offset the average loss on the steering peak value, and and a small bias 0.05 is to offset the training defect, if the car always turn to one side. One case, I can [keep the car on the right side](https://www.youtube.com/watch?v=nLKzVSWgKWI&t=1s).  
 ```
 smooth_angle=np.mean(moving_avg)*1.1-0.05
 ```
@@ -301,17 +311,24 @@ if abs(float(current_steering_angle)*float(speed)) ==0:
 ```
 As result, the car can reach top speed 30mph, it also can keep on the track. 
 
-## Lessons Learned/Reflection
+On track 2, because of the steep hill, I need give more throttle to keep up. 
+```
+        throttle = 0.3*12/abs(float(current_steering_angle)*float(speed))
+```
+
+### Lessons Learned/Reflection
 
 While the car keep running in the simulator, I can prepare the document for the submission. This is the self driving car future we are looking for. We need overcome some obstacles: 
 - Better training data
 - More compute power
 - Standardize Network Architecture
-- It is a try and error approach, not engineering approach
+- It is a try and error approach, and engineering approach
 - Working on real environment
 
 ## Future Work
-The Udacity provided training data is not too bad. In the begining, I don't like this kind of sharp on and off controller. 
+The Udacity provided training data is not too bad. It does have some bad turns. And the model clones them. It perfecty matches the title, behavioral clone. If you are good driver, it clones. If you are bad driver, it clones. 
+
+In the begining, I don't like this kind of sharp on and off controller. 
 After tried different network architecture, Nvidia, Comma AI and my home made one, I like the Nvidia one. I hope they can standardize it, and provide with trained weights as well. 
 
 190 seconds to train 19200 66x200 size images on CPU, is not that bad. Somehow I found the GPU is not accelete that much in the generator setting. Both my GTX 1070 or K2000 GPU Utilization is very low, less than 40%. On other tensorflow test, the GPU get at lease 3-10 times faster than CPU. I guess the bottle neck maybe is the generator. During training or driving, the RAM memory useage is less than 2.8G, It doesn't make sense to save memory but spend more time waiting for results. 
