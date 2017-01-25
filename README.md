@@ -143,15 +143,20 @@ def mask_image(img):
 ```
 The flip function is simple flip the image and steering angle at 50/50 chance. I will consider flip all the images just to double the dataset size. 
 
-According to the model input size(64x64), all images need resize to fit. 
+According to the model input size(66x200), all images need resize to fit. 
 There are more benfit to make a square input, it will explained in the notebook and driving section.
 
-## Network Architecture 
+## Model Architecture Design 
 
-NVIDIA's End to End Learning for Self-Driving Cars Network Architecture is a well know model that work for this kind of project. paper. In this project, I kept all the feature filters for each layer, and use the same stride and padding sittings as Nvidia paper. And transfer it into Keras environment. My approach is try to keep track of what kind of structures are going to work, which one are not going to work.  
+NVIDIA's End to End Learning for Self-Driving Cars Network Architecture is popular for this kind of project. Therefore, I want to keep the core architecture of the Nvidia model as much as possible according to the [paper](https://arxiv.org/pdf/1604.07316.pdf), apply all the feature filters for each layer, and use the same stride and padding sittings as Nvidia paper. The original Nvidia has a tenserflow version, I transfered it into Keras environment. My approach is to change one thing at a time, and keep track what kind of structures is working , which one is not working.  
 
-Eventually, I added Lambda layer to normalize the input image, follow by a color space conversion layer.
-I don't see a big differecy or benefit about this color space layer yet. 
+I added Lambda layer to normalize the input image, the image input value(between 0-255)divided by 127.5, then minus 1, yield new value between (-1 to 1). As per Udacity Deep learning class, it is better spread the value around zero, rather than skew to the one side. [Comma Ai](https://github.com/commaai/research/blob/master/train_steering_model.py) also use this idea. 
+The input shape I kept as (66, 200, 3). It is smaller than Resnet, AlexNet and VGG (224,224), but much bigger than LeNet (32, 32). Just to balance the training time and system overhead. 
+
+Next is a color space conversion layer, credit to [Vivek's model](https://chatbotslife.com/learning-human-driving-behavior-using-nvidias-neural-network-model-and-image-augmentation-80399360efee#.ykemywxos). The idea is use 3 filter go through 3 color channels, see which one get picked. I don't see a big differecy or benefit about this color space layer yet. 
+
+There are 5 convolutional layers. each one has 24 to 64 filters, all use 'valid' padding, stribe  
+
 I do added a MaxPooling layer after first Convolutional layer to see if there is any benefit.  
 The full network is look like this: 
 ```
