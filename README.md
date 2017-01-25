@@ -5,7 +5,7 @@
 
 The objective: Use Deep Learning to Clone Driving Behavior
 
-I personly tried drive the car in provided simulator with keyboard. It took me a while to get used to the track 1, and saved  some images for exporation. Udacity also provided [prefessional driver records](https://www.youtube.com/watch?v=tMs6NUHAy80) for better results. I have broken down the project scope into the following modules:
+I personly tried drive the car in provided simulator with keyboard. It took me a while to get used to the track 1, and saved  some images for exporation. Udacity also provided [prefessional driver records](https://www.youtube.com/watch?v=tMs6NUHAy80) for better results. On track one, the [model driving skill](https://www.youtube.com/watch?v=eFpnKPBd5ts) is better than me now. I have broken down the project scope into the following modules:
 
 - Explorting the data (data_visualization.ipynb)
 - Data Processing Pipeline (utility.py)
@@ -45,7 +45,7 @@ Make sure the drive_log.csv is attached in the ./data/ path.
 
 ### Explorting the data
 
-First of all, we may want to see what is captured in the data set. For every given time stamp, there are 3 images recorded from left, center, and right cameras. 
+First of all, we may want to see what is captured in the [Udacity data set](https://www.youtube.com/watch?v=tMs6NUHAy80). The driver drove through the track 1 backward and forward few times. For every given time stamp, there are 3 images recorded from left, center, and right cameras. 
 <p align="center">
  <img src="./image/3_images.png" width="800">
 </p>
@@ -54,7 +54,7 @@ First plot is my keyboard driving inputs.
 <p align="center">
  <img src="./image/keyboard_driving_dataset_steering_ 200_1600.png" width="800">
 </p>
-Second plot is Udacity provided driving inputs.
+Second plot is Udacity provided driving inputs. I believe it already smooth out. 
 <p align="center">
  <img src="./image/udacity_raw_training_steering_200_1600" width="800">
 </p>
@@ -68,8 +68,10 @@ Next plot is Nvidia paper real human driving inputs.
 </p>
 
 The first thing I want to do is to apply a moving average to the input and smooth out the steering action. The green line shows 30 frams averaged outputs. Because I never turn the steering wheel like keyboard driver does. But something happed after. 
-
-### Training methold
+<p align="center">
+ <iframe width="1280" height="720" src="https://www.youtube.com/embed/tMs6NUHAy80" frameborder="0" allowfullscreen></iframe>
+</p>
+### Data Analysis
 
 There are total 24108 images (8036 images per camera), along with 8036 steering records in the Udacity dataset. Compare to Nvidia sample set 40,000 images one channel, this is very small, may not have enough image to generalize the model weight in order to pass the training course or other unseen courses. Image Augmentation Technique is recommand by Udacity and other student's post. I tried many of them, and I choose the following to form the image processing pipeline. 
 - Random adjust the image brighnest/darkness
