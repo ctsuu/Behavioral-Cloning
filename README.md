@@ -67,7 +67,7 @@ Next plot is Nvidia paper real human driving inputs.
  <img src="./image/nvidia_training_steering_200_1600_30f_moving_avg.png" width="800">
 </p>
 
-The first thing I want to do is to apply a moving average to the input and smooth out the steering action. The green line shows 30 frams averaged outputs. Because I never turn the steering wheel like keyboard driver does. But something happed after. 
+The first thing I want to do is to apply a moving average to the input and smooth out the steering action. The green line shows 30 frams averaged outputs. Because I never turn the steering wheel like keyboard driver does. 
 <p align="center">
  <iframe width="1280" height="720" src="https://www.youtube.com/embed/tMs6NUHAy80" frameborder="0" allowfullscreen></iframe>
 </p>
@@ -106,7 +106,10 @@ The lookahead_crop is my idea inspired by human driver. When kids start learning
  <img src="./image/image_pipeline_output.png" width="800">
 </p>
 
-I see lot of students using random shear operation, so I think I will give it a try. I selected 90% of the images will go through the random shearing process. 
+I see lot of students using random shear operation, so I think I will give it a try. I selected 50% of the images will be sheared. It looks like camera in motion. Maybe optical flow and show the real effect, but shear is easier and quick to do. 
+<p align="center">
+ <img src="./image/sheared_image.png" width="800">
+</p>
 
 Random darkness function is to adjust the brightness of a image, to make new image look like under a shade. 
 Random mask_img function will mask random area of a picture, the new image will look like under a shade and other difficulty visual conditions. The idea is inspired by Udacity project 1. 
@@ -227,7 +230,7 @@ The 5 convolutional layer shrink down layer by layer as per the plan, because I 
 
 Then follow by 5 fully connected layers. The first dense layer has 1164 connectors, therefore, between flatten layer and dense_1 layer has 1152x1164+1164 = 1342092 connections. Activation function is 'relu' again. 
 
-Some architecture through out, the output layer with one output, no activation funcion. 
+Some architecture apply to all fully connected network, only the output layer with one output, no activation funcion. 
 
 Dropout is aplied after dense_1 layer. Not changing in parameters, but will provent some overfitting. 
 
@@ -276,9 +279,9 @@ The Adam learning rate is 0.001, I can see the training loss improving quickly o
 
 ### Results
 
-In this project, 20 epochs seems enough to drop the loss to 0.037-ish range. [it can handle the training track](https://www.youtube.com/watch?v=eFpnKPBd5ts&t=2s). The training slows down at about 15 epoch. There are more tune up can be done to make it drive smoothly and safely.     
+In this project, 20 epochs seems enough to drop the loss to 0.037-ish range. [it can handle the training track](https://www.youtube.com/watch?v=eFpnKPBd5ts&t=2s). The training slows down at about 15 epoch. There are more tune up can be done to make it drive smoothly and safely. More training seems overfitted the model on track 1. Or the machine pick up the bad driver's behavioral from human. The submitted model.h5 and model.json is trained on 20 epoches.      
 
-40 epochs is the kicker, if you want to [pass the mountain track 2](https://www.youtube.com/watch?v=mwniaaC-1fQ&t=16s). It is a totally unknown track for the computer. The machine only see batch of augmentated images, some are not even recognizable by human. And they are low resulation, the car's life depends on 66x200 pictures. 
+40 epochs is the kicker, with training loss at 0.295, the machine can [pass the mountain track 2](https://www.youtube.com/watch?v=mwniaaC-1fQ&t=16s). It is a totally unknown track for the computer. The machine only see batch of augmentated images, some are not even recognizable by human. And they are low resulation, the car's life depends on 66x200 pictures. 
 <p align="center">
  <img src="./image/5x5_pipeline_output.png" width="800">
 </p>
@@ -315,6 +318,7 @@ On track 2, because of the steep hill, I need give more throttle to keep up.
 ```
         throttle = 0.3*12/abs(float(current_steering_angle)*float(speed))
 ```
+Maybe I should group the drive.py into higher level controlling method for further developing. It is more about the decision making, speed, direction, and change lane, etc. Neural network can handle the low level reaction type of work. 
 
 ### Lessons Learned/Reflection
 
